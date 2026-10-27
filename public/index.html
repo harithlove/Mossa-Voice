@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MOSSA Voice — เสียงของลูกค้า</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f4;--card:#fff;--line:#dcdadb;--text:#2b2729;--muted:#666465;
+  --red:#d9272e;--magenta:#b02063;--purple:#8f197b;--ok:#1d7f4a;--crit:#b3261e;
+  --chip-on-bg:#8f197b;--chip-on-text:#fff;--link:#8f197b;--errbg:#fdecea;--soft:#f7f3f6;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#161315;--card:#211d20;--line:#3d373b;--text:#f1eeef;--muted:#b4afb2;
+    --red:#ef5a60;--ok:#4cc783;--crit:#ff8a80;--link:#e0a0dc;--errbg:#3a1e1d;--soft:#2a2428;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "IBM Plex Sans Thai",system-ui,sans-serif}
+h1,h2,h3{font-family:Prompt,"IBM Plex Sans Thai",sans-serif;font-weight:600;margin:0}
+h1{font-size:1.4rem}h2{font-size:1.1rem;margin-bottom:.6rem}
+a{color:var(--link)}
+header{background:var(--card);border-bottom:1px solid var(--line)}
+.bar{height:4px;background:linear-gradient(90deg,#ec2721,#b02063 55%,#8f197b)}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;max-width:640px;margin:0 auto}
+.logo{background:#fff;border-radius:8px;padding:2px 6px;display:flex;align-items:center;min-height:40px}
+.logo img{height:46px;width:auto;display:block}
+.logo b{font-family:Prompt,sans-serif;color:#b02063;letter-spacing:.04em}
+nav{display:flex;gap:14px;font-size:.92rem;flex-wrap:wrap;justify-content:flex-end}
+nav a,nav button{color:var(--link);text-decoration:none;font:inherit;background:none;border:0;padding:8px 0;cursor:pointer;min-height:40px}
+nav a:hover,nav button:hover{text-decoration:underline}
+main{padding:16px 16px 110px;max-width:640px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:0 0 14px}
+.muted{color:var(--muted);font-size:.9rem}
+.lbl{display:block;font-weight:500;margin:14px 0 6px}
+.lbl:first-child{margin-top:0}
+.req{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;cursor:pointer}
+.chip.on{background:var(--chip-on-bg);border-color:var(--chip-on-bg);color:var(--chip-on-text)}
+.chip.on.danger{background:var(--crit);border-color:var(--crit);color:#fff}
+:focus-visible{outline:3px solid var(--magenta);outline-offset:2px}
+textarea,input[type=text]{width:100%;font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:130px;resize:vertical}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer}
+.chk input{width:22px;height:22px;margin-top:3px;accent-color:var(--purple);flex:none}
+.chk small{display:block;color:var(--muted)}
+.err{background:var(--errbg);border:1px solid var(--crit);color:var(--crit);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.err ul{margin:4px 0 0;padding-left:20px}
+.warn{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:.92rem}
+.submit{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(transparent,var(--bg) 35%);padding:18px 16px 16px}
+.btn{display:block;width:100%;max-width:608px;margin:0 auto;min-height:48px;border:0;border-radius:12px;background:var(--red);color:#fff;font:600 1rem Prompt,sans-serif;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:default}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--line)}
+.btn.inline{display:inline-block;width:auto;padding:0 20px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.thumb{position:relative}
+.thumb img{width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.x{position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;line-height:1}
+.aud{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.92rem}
+.big{font:500 1.5rem "IBM Plex Mono",monospace;letter-spacing:.02em;word-break:break-all}
+.badge{display:inline-block;font-size:.8rem;padding:2px 10px;border-radius:999px;background:var(--soft);border:1px solid var(--line)}
+.badge.warn2{border-color:var(--red);color:var(--red)}
+.item{display:block;text-decoration:none;color:inherit}
+.item .top2{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.item .id{font:500 .95rem "IBM Plex Mono",monospace}
+.tl{list-style:none;margin:10px 0 0;padding:0 0 0 6px}
+.tl li{position:relative;padding:0 0 18px 26px;border-left:2px solid var(--line);margin-left:6px}
+.tl li:last-child{border-left-color:transparent;padding-bottom:0}
+.tl li::before{content:"";position:absolute;left:-8px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--line)}
+.tl li.ok::before{background:var(--purple)}
+.tl li.now::before{background:var(--red)}
+.stars{display:flex;gap:4px}
+.star{min-width:44px;min-height:44px;font-size:1.6rem;line-height:1;background:none;border:0;cursor:pointer;color:var(--line)}
+.star.on{color:#e0a100}
+.nps{display:flex;flex-wrap:wrap;gap:6px}
+.nps .chip{min-width:42px;padding:6px 0;text-align:center}
+.center{text-align:center}
+.spin{padding:40px 0;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <a class="logo" href="#" aria-label="MOSSA Voice"><img src="/logo.png" alt="Mossa Sport Society" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'MOSSA'}))"></a>
+    <nav id="nav"></nav>
+  </div>
+  <div class="bar"></div>
+</header>
+<main id="app"><div class="spin">กำลังโหลด…</div></main>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TYPE = {problem:'แจ้งปัญหา', praise:'ชมเชย', suggest:'เสนอแนะ'};
+const GENDER = [['M','ชาย'],['F','หญิง'],['O','อื่น ๆ']];
+const CTYPE = [['GEN','ลูกค้าทั่วไป'],['MEM','สมาชิก (Membership)'],['PTN','ลูกค้าจากบริษัทคู่สัญญา']];
+const AGE = [['lt18','ต่ำกว่า 18'],['18_25','18–25'],['26_35','26–35'],['36_45','36–45'],['46_55','46–55'],['56p','56 ขึ้นไป']];
+const WHEN = [['now','เมื่อสักครู่'],['today','วันนี้'],['yday','เมื่อวาน'],['older','ก่อนหน้านั้น']];
+const MAX_IMG = 3, MAX_BYTES = 4 * 1024 * 1024;
+
+const S = { config:null, me:null, editProfile:false, form:null, errors:[], busy:false, entryArea:'', survey:null, surveyBusy:false };
+
+/* ---------- helpers ---------- */
+async function api(path, opts = {}) {
+  const init = { credentials:'same-origin', method: opts.method || 'GET', headers:{} };
+  if (opts.form) init.body = opts.form;
+  else if (opts.body) { init.body = JSON.stringify(opts.body); init.headers['Content-Type'] = 'application/json'; }
+  const r = await fetch(path, init);
+  let d = null; try { d = await r.json(); } catch {}
+  if (!r.ok) { const e = new Error((d && d.detail) || 'เกิดข้อผิดพลาด (' + r.status + ')'); e.status = r.status; throw e; }
+  return d;
+}
+const view = html => { $('#app').innerHTML = html; };
+const keepScroll = fn => { const y = scrollY; fn(); scrollTo(0, y); };
+const chip = (attr, v, label, on, danger) =>
+  `<button type="button" class="chip${on?' on':''}${danger&&on?' danger':''}" ${attr}="${esc(v)}" aria-pressed="${!!on}">${esc(label)}</button>`;
+const fmt = at => { if (!at) return ''; const d = new Date(at); return isNaN(d) ? esc(at) : d.toLocaleString('th-TH', {dateStyle:'medium', timeStyle:'short'}); };
+const newForm = (area = '') => ({ gender:'', ctype:'', age:'', regular:[], c1:false, c2:false, c3:false,
+  type:'', area, sub:'', text:'', when:'', safety:'', anon:false, callback:false, images:[], audio:null });
+
+function renderNav() {
+  const authed = S.me && S.me.authenticated;
+  $('#nav').innerHTML = authed
+    ? '<a href="#">ส่งเรื่อง</a><a href="#track">เรื่องของฉัน</a><button type="button" id="signout">ออกจากระบบ</button>'
+    : '';
+}
+
+/* ---------- Google sign in / out (Auth.js: POST + csrf) ---------- */
+async function postAuth(path, extra = {}) {
+  const { csrfToken } = await api('/api/auth/csrf');
+  const f = document.createElement('form');
+  f.method = 'POST'; f.action = path;
+  for (const [k, v] of Object.entries({ csrfToken, ...extra })) {
+    const i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = v; f.appendChild(i);
+  }
+  document.body.appendChild(f); f.submit();
+}
+const signIn = () => postAuth('/api/auth/signin/google', { callbackUrl: location.href });
+const signOut = () => postAuth('/api/auth/signout', { callbackUrl: location.origin + '/' });
+
+function renderLogin() {
+  view(`<div class="card center">
+    <h1>เสียงของคุณ ช่วยให้ MOSSA ดีขึ้น</h1>
+    <p class="muted">แจ้งปัญหา ชมเชย หรือเสนอแนะเกี่ยวกับบริการของ Mossa Sport Society และติดตามสถานะได้ทุกขั้นตอน</p>
+    <button type="button" class="btn" id="login" style="margin-top:14px">เข้าสู่ระบบด้วย Google</button>
+    <p class="muted" style="margin-top:14px">เราใช้ Google เพื่อยืนยันว่าเป็นคุณและให้คุณติดตามเรื่องของตัวเองได้ ทีมงานไม่เห็นชื่อหรืออีเมลของคุณ เว้นแต่คุณเลือกให้ติดต่อกลับ</p>
+  </div>`);
+}
+
+/* ---------- profile helpers ---------- */
+const needProfile = () => !S.me.has_profile || S.me.needs_reconsent || S.editProfile;
+function prefillProfile() {
+  const p = S.me.profile; if (!p) return;
+  Object.assign(S.form, { gender:p.gender, ctype:p.customer_type, age:p.age_group, regular:[...p.regular_services],
+    c1:p.consent_service, c2:p.consent_research, c3:p.consent_callback });
+}
+const callbackAllowed = () => needProfile() ? S.form.c3 : !!(S.me.profile && S.me.profile.consent_callback);
+
+/* ---------- submit page ---------- */
+function renderSubmit() {
+  const f = S.form, areas = S.config.areas, area = areas.find(a => a.code === f.area);
+  const np = needProfile();
+  let h = '';
+  if (S.errors.length) h += `<div class="err" role="alert"><b>กรุณาตรวจสอบ</b><ul>${S.errors.map(e => `<li>${esc(e)}</li>`).join('')}</ul></div>`;
+
+  if (np) {
+    h += `<section class="card"><h2>ข้อมูลพื้นฐาน <span class="muted">(กรอกครั้งเดียว)</span></h2>
+      <span class="lbl">เพศ <span class="req">*</span></span><div class="chips">${GENDER.map(([v,l]) => chip('data-set="gender" data-v', v, l, f.gender===v)).join('')}</div>
+      <span class="lbl">คุณเป็นลูกค้าประเภทใด <span class="req">*</span></span><div class="chips">${CTYPE.map(([v,l]) => chip('data-set="ctype" data-v', v, l, f.ctype===v)).join('')}</div>
+      <span class="lbl">ช่วงอายุ <span class="req">*</span></span><div class="chips">${AGE.map(([v,l]) => chip('data-set="age" data-v', v, l, f.age===v)).join('')}</div>
+      <span class="lbl">บริการที่ใช้เป็นประจำ <span class="muted">(เลือกได้หลายข้อ ไม่บังคับ)</span></span>
+      <div class="chips">${areas.filter(a => a.code!=='other').map(a => chip('data-toggle="regular" data-v', a.code, a.label, f.regular.includes(a.code))).join('')}</div>
+      <p class="muted">ข้อมูลนี้ใช้ดูภาพรวมของกลุ่มลูกค้า ไม่ใช้ระบุตัวบุคคล</p>
+      <label class="chk"><input type="checkbox" data-bind="c1" ${f.c1?'checked':''}><span>ยินยอมให้เก็บและใช้ข้อมูลเพื่อปรับปรุงบริการ <span class="req">*</span></span></label>
+      <label class="chk"><input type="checkbox" data-bind="c2" ${f.c2?'checked':''}><span>ยินยอมให้ใช้ข้อมูลที่ไม่ระบุตัวตนเพื่อการวิจัยทางวิชาการ <small>(ไม่บังคับ)</small></span></label>
+      <label class="chk"><input type="checkbox" data-bind="c3" ${f.c3?'checked':''}><span>ยินยอมให้ทีมงานติดต่อกลับ <small>(ไม่บังคับ)</small></span></label>
+    </section>`;
+  } else {
+    h += `<div class="card muted" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <span>ใช้ข้อมูลพื้นฐานที่จำไว้แล้ว (บัญชี Google)</span><button type="button" class="chip" id="editprof">แก้ไข</button></div>`;
+  }
+
+  h += `<section class="card"><h2>เรื่องที่ต้องการแจ้ง</h2>
+    <span class="lbl">ประเภท <span class="req">*</span></span><div class="chips">${Object.entries(TYPE).map(([v,l]) => chip('data-set="type" data-v', v, l, f.type===v)).join('')}</div>
+    <span class="lbl">เกี่ยวกับบริการไหน <span class="req">*</span></span><div class="chips">${areas.map(a => chip('data-set="area" data-v', a.code, a.label, f.area===a.code)).join('')}</div>`;
+  if (area) h += `<span class="lbl">จุดหรือรายละเอียด <span class="req">*</span></span><div class="chips">${area.subs.map(s => chip('data-set="sub" data-v', s.code, s.label, f.sub===s.code)).join('')}</div>`;
+  h += `<label class="lbl" for="text">เล่าให้เราฟัง <span class="req">*</span></label>
+    <textarea id="text" maxlength="4000" placeholder="เกิดอะไรขึ้น หรืออยากให้เราปรับปรุงอะไร">${esc(f.text)}</textarea>
+    <div class="muted" style="text-align:right"><span id="cnt">${f.text.length}</span>/4000</div>
+    <span class="lbl">แนบรูปและเสียง <span class="muted">(ไม่บังคับ)</span></span>
+    <div class="row">
+      <button type="button" class="chip" id="addimg" ${f.images.length>=MAX_IMG?'disabled':''}>+ รูปภาพ (${f.images.length}/${MAX_IMG})</button>
+      <button type="button" class="chip" id="addaud" ${f.audio?'disabled':''}>+ ไฟล์เสียง</button>
+    </div>
+    <input type="file" id="imgs" accept="image/*" multiple hidden><input type="file" id="aud" accept="audio/*" hidden>
+    <div class="thumbs">${f.images.map((im,i) => `<div class="thumb"><img src="${im.url}" alt="รูปที่แนบ ${i+1}"><button type="button" class="x" data-rmimg="${i}" aria-label="ลบรูปที่ ${i+1}">×</button></div>`).join('')}</div>
+    ${f.audio ? `<div class="aud">🎙 ${esc(f.audio.name)} <button type="button" class="x" style="position:static" data-rmaud="1" aria-label="ลบไฟล์เสียง">×</button></div>` : ''}
+    <p class="muted" style="margin:8px 0 0">โปรดหลีกเลี่ยงรูปที่เห็นใบหน้าหรือข้อมูลของบุคคลอื่น · ไฟล์ละไม่เกิน 4 MB (ระบบย่อรูปให้อัตโนมัติ)</p>
+  </section>`;
+
+  if (f.type === 'problem') {
+    h += `<section class="card"><h2>รายละเอียดของปัญหา</h2>
+      <span class="lbl">เกิดเมื่อไหร่ <span class="req">*</span></span><div class="chips">${WHEN.map(([v,l]) => chip('data-set="when" data-v', v, l, f.when===v)).join('')}</div>
+      <span class="lbl">ปัญหานี้กระทบความปลอดภัยหรือไม่ <span class="req">*</span></span>
+      <div class="chips">${chip('data-set="safety" data-v','yes','ใช่',f.safety==='yes',true)}${chip('data-set="safety" data-v','no','ไม่',f.safety==='no')}</div></section>`;
+  }
+
+  h += `<section class="card"><h2>การแสดงตัวตน</h2>
+    <label class="chk"><input type="checkbox" data-bind="anon" ${f.anon?'checked':''}><span>ปิดชื่อต่อทีมงาน
+      <small>ทีมงานเห็นเนื้อหาและกลุ่มลูกค้า แต่ไม่เห็นว่าเป็นใคร และติดต่อกลับไม่ได้ (ระบบยังผูกเรื่องกับบัญชีของคุณเพื่อให้ติดตามสถานะได้)</small></span></label>`;
+  if (callbackAllowed() && !f.anon) {
+    h += `<label class="chk"><input type="checkbox" data-bind="callback" ${f.callback?'checked':''}><span>ให้ทีมงานติดต่อกลับเรื่องนี้
+      <small>ทีมงานจะติดต่อทางอีเมลของบัญชี Google ที่คุณใช้เข้าสู่ระบบ</small></span></label>`;
+  }
+  h += `</section>
+    <div class="submit"><button type="button" class="btn" id="send" ${S.busy?'disabled':''}>${S.busy?'กำลังส่ง…':'ส่งเรื่อง'}</button></div>`;
+  view(h);
+}
+
+function validate() {
+  const f = S.form, e = [];
+  if (needProfile()) {
+    if (!f.gender) e.push('กรุณาเลือกเพศ');
+    if (!f.ctype) e.push('กรุณาเลือกประเภทลูกค้า');
+    if (!f.age) e.push('กรุณาเลือกช่วงอายุ');
+    if (!f.c1) e.push('ต้องยินยอมให้เก็บและใช้ข้อมูลเพื่อปรับปรุงบริการ');
+  }
+  if (!f.type) e.push('กรุณาเลือกประเภทเรื่อง');
+  if (!f.area) e.push('กรุณาเลือกบริการ');
+  else if (!f.sub) e.push('กรุณาเลือกจุดหรือรายละเอียด');
+  if (f.text.trim().length < 5) e.push('กรุณาเล่าให้เราฟังอย่างน้อย 5 ตัวอักษร');
+  if (f.type === 'problem') {
+    if (!f.when) e.push('กรุณาระบุว่าเกิดเมื่อไหร่');
+    if (!f.safety) e.push('กรุณาระบุว่ากระทบความปลอดภัยหรือไม่');
+  }
+  return e;
+}
+
+async function submit() {
+  if (S.busy) return;
+  const errs = validate();
+  if (errs.length) { S.errors = errs; renderSubmit(); scrollTo(0, 0); return; }
+  S.busy = true; S.errors = []; keepScroll(renderSubmit);
+  const f = S.form;
+  const body = { type:f.type, service_area:f.area, sub_area:f.sub, text:f.text.trim(),
+    entry_point: S.entryArea && S.entryArea === f.area ? 'qr' : 'direct', anonymous_to_staff:f.anon };
+  if (f.type === 'problem') { body.incident_time = f.when; body.safety_flag = f.safety === 'yes'; }
+  if (!f.anon && f.callback && callbackAllowed()) body.callback_wanted = true;
+  if (needProfile()) body.profile = { gender:f.gender, customer_type:f.ctype, age_group:f.age, regular_services:f.regular,
+    consent_service:f.c1, consent_research:f.c2, consent_callback:f.c3 };
+  try {
+    const res = await api('/api/feedback', { method:'POST', body });
+    const fails = [];
+    const files = [...f.images.map(i => i.file), ...(f.audio ? [f.audio] : [])];
+    for (const file of files) {
+      const fd = new FormData(); fd.append('files', file, file.name);
+      try { await api('/api/feedback/' + encodeURIComponent(res.ticket_id) + '/attachments', { method:'POST', form:fd }); }
+      catch (e) { fails.push(e.message); }
+    }
+    f.images.forEach(i => URL.revokeObjectURL(i.url));
+    S.me = await api('/api/me'); S.editProfile = false; S.form = newForm(); S.busy = false;
+    renderDone(res, fails);
+  } catch (e) {
+    S.busy = false; S.errors = [e.message];
+    if (e.status === 401) { S.me = await api('/api/me').catch(() => S.me); return route(); }
+    renderSubmit(); scrollTo(0, 0);
+  }
+}
+
+function renderDone(res, fails) {
+  view(`<h1 style="margin:6px 0 14px">รับเรื่องแล้ว ขอบคุณที่บอกเรา</h1>
+    <div class="card"><div class="muted">เลขเรื่องของคุณ</div><div class="big">${esc(res.ticket_id)}</div>
+      <p style="margin:10px 0 0">ทีมที่รับเรื่อง: <b>${esc(res.assigned_dept)}</b></p>
+      ${res.escalated ? '<p class="muted" style="margin:6px 0 0">เรื่องนี้เกี่ยวกับความปลอดภัย เราแจ้งผู้จัดการให้ดูแลเป็นพิเศษแล้ว</p>' : ''}
+      ${fails.length ? `<div class="warn" role="alert">ส่งเรื่องสำเร็จ แต่แนบไฟล์ไม่สำเร็จบางส่วน: ${esc([...new Set(fails)].join(' / '))}</div>` : ''}
+    </div>
+    <div class="row"><a class="btn inline" style="display:inline-flex;align-items:center;text-decoration:none" href="#t=${encodeURIComponent(res.ticket_id)}">ติดตามสถานะ</a>
+    <button type="button" class="btn ghost inline" id="again">ส่งเรื่องใหม่</button></div>`);
+}
+
+/* ---------- track ---------- */
+async function renderTrack() {
+  view('<div class="spin">กำลังโหลด…</div>');
+  try {
+    const list = await api('/api/my/feedback');
+    if (!list.length) return view('<h1 style="margin:6px 0 14px">เรื่องของฉัน</h1><div class="card muted">ยังไม่มีเรื่องที่ส่งไว้จากอุปกรณ์หรือบัญชีนี้</div>');
+    view('<h1 style="margin:6px 0 14px">เรื่องของฉัน</h1>' + list.map(t => `<a class="card item" href="#t=${encodeURIComponent(t.ticket_id)}">
+      <div class="top2"><span class="id">${esc(t.ticket_id)}</span><span><span class="badge">${esc(t.status)}</span>${t.survey_open ? ' <span class="badge warn2">รอประเมิน</span>' : ''}</span></div>
+      <div class="muted">${esc(TYPE[t.type] || t.type)} · ${esc(t.service_label)}</div></a>`).join(''));
+  } catch (e) { view(`<div class="err" role="alert">${esc(e.message)}</div>`); }
+}
+
+const stars = (k, n) => `<div class="stars" role="group">${[1,2,3,4,5].map(i => `<button type="button" class="star${S.survey[k]>=i?' on':''}" data-star="${k}" data-v="${i}" aria-label="${i} ดาว" aria-pressed="${S.survey[k]===i}">★</button>`).join('')}</div>`;
+
+async function renderDetail(id) {
+  view('<div class="spin">กำลังโหลด…</div>');
+  let t;
+  try { t = await api('/api/track/' + encodeURIComponent(id)); }
+  catch (e) { return view(`<div class="err" role="alert">${esc(e.status === 404 ? 'ไม่พบเรื่องนี้' : e.message)}</div><a href="#track">← กลับ</a>`); }
+  S.detail = t;
+  if (!S.survey || S.surveyFor !== id) { S.survey = { resolved:'', csat:0, response_speed:0, nps:null, comment:'', err:'' }; S.surveyFor = id; }
+  let h = `<p><a href="#track">← เรื่องของฉัน</a></p><div class="card">
+    <div class="id big" style="font-size:1.2rem">${esc(t.ticket_id)}</div>
+    <div class="muted">${esc(TYPE[t.type] || t.type)} · ${esc(t.service_label)} · ${esc(t.sub_label)}</div>
+    <p style="margin:8px 0 0"><span class="badge">${esc(t.status)}</span></p>
+    <ul class="tl">${t.timeline.map(s => `<li class="${esc(s.state)}"><b>${esc(s.name)}</b>${s.at ? `<div class="muted">${fmt(s.at)}</div>` : ''}</li>`).join('')}</ul></div>`;
+  if (t.survey_done) h += '<div class="card muted">ขอบคุณสำหรับการประเมิน</div>';
+  else if (t.survey_open) {
+    const sv = S.survey;
+    h += `<section class="card"><h2>ประเมินความพึงพอใจ</h2>
+      ${sv.err ? `<div class="err" role="alert">${esc(sv.err)}</div>` : ''}
+      <span class="lbl">ปัญหาได้รับการแก้ไขหรือไม่ <span class="req">*</span></span>
+      <div class="chips">${[['yes','แก้แล้ว'],['part','แก้บางส่วน'],['no','ยังไม่แก้']].map(([v,l]) => chip('data-sv="resolved" data-v', v, l, sv.resolved===v, v==='no')).join('')}</div>
+      <span class="lbl">ความพึงพอใจ <span class="req">*</span></span>${stars('csat')}
+      <span class="lbl">ความเร็วในการตอบสนอง <span class="req">*</span></span>${stars('response_speed')}
+      <span class="lbl">จะแนะนำ MOSSA ให้คนอื่นไหม (0 = ไม่แนะนำเลย, 10 = แนะนำแน่นอน) <span class="req">*</span></span>
+      <div class="nps">${Array.from({length:11},(_,i) => chip('data-sv="nps" data-v', i, i, sv.nps===i)).join('')}</div>
+      <label class="lbl" for="cm">ความเห็นเพิ่มเติม <span class="muted">(ไม่บังคับ)</span></label>
+      <textarea id="cm" maxlength="2000" style="min-height:90px">${esc(sv.comment)}</textarea>
+      ${sv.resolved === 'no' ? '<p class="muted">ถ้าเลือก “ยังไม่แก้” เราจะเปิดเรื่องของคุณใหม่และแจ้งผู้จัดการ</p>' : ''}
+      <button type="button" class="btn" id="sendsv" style="margin-top:14px" ${S.surveyBusy?'disabled':''}>${S.surveyBusy?'กำลังส่ง…':'ส่งแบบประเมิน'}</button></section>`;
+  }
+  view(h);
+}
+
+async function submitSurvey() {
+  const sv = S.survey;
+  if (!sv.resolved || !sv.csat || !sv.response_speed || sv.nps === null) { sv.err = 'กรุณาตอบแบบประเมินให้ครบทุกข้อ (ยกเว้นความเห็นเพิ่มเติม)'; return keepScroll(() => renderDetail(S.surveyFor)); }
+  S.surveyBusy = true; sv.err = '';
+  try {
+    const r = await api('/api/track/' + encodeURIComponent(S.surveyFor) + '/survey', { method:'POST',
+      body:{ resolved:sv.resolved, csat:sv.csat, response_speed:sv.response_speed, nps:sv.nps, comment:sv.comment.trim() || undefined } });
+    S.surveyBusy = false; S.survey = null;
+    await renderDetail(S.surveyFor || S.detail.ticket_id);
+    if (r.reopened) $('#app').insertAdjacentHTML('afterbegin', '<div class="warn" role="status">ขอบคุณที่แจ้ง เราเปิดเรื่องของคุณใหม่และแจ้งผู้จัดการแล้ว</div>');
+  } catch (e) { S.surveyBusy = false; sv.err = e.message; renderDetail(S.surveyFor); }
+}
+
+/* ---------- images ---------- */
+async function shrink(file) {
+  try {
+    const bmp = await createImageBitmap(file);
+    const sc = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * sc); c.height = Math.round(bmp.height * sc);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const b = await new Promise(r => c.toBlob(r, 'image/jpeg', .82));
+    return new File([b], 'photo.jpg', { type:'image/jpeg' });
+  } catch { return /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= MAX_BYTES ? file : null; }
+}
+
+/* ---------- events ---------- */
+function clearErr() { if (S.errors.length) { S.errors = []; const b = document.querySelector('.err'); if (b) b.remove(); } }
+
+document.addEventListener('click', async ev => {
+  const t = ev.target.closest('button,a'); if (!t) return;
+  if (t.id === 'login') return signIn();
+  if (t.id === 'signout') return signOut();
+  if (t.id === 'send') return submit();
+  if (t.id === 'again') { location.hash = ''; return route(); }
+  if (t.id === 'sendsv') return submitSurvey();
+  if (t.id === 'editprof') { S.editProfile = true; prefillProfile(); return renderSubmit(); }
+  if (t.id === 'addimg') return $('#imgs').click();
+  if (t.id === 'addaud') return $('#aud').click();
+  const f = S.form;
+  if (t.dataset.set) {
+    clearErr(); const k = t.dataset.set, v = t.dataset.v;
+    if (k === 'area' && f.area !== v) f.sub = '';
+    f[k] = v; return keepScroll(renderSubmit);
+  }
+  if (t.dataset.toggle) { clearErr(); const a = f[t.dataset.toggle], v = t.dataset.v; const i = a.indexOf(v); i < 0 ? a.push(v) : a.splice(i, 1); return keepScroll(renderSubmit); }
+  if (t.dataset.rmimg !== undefined) { const [r] = f.images.splice(+t.dataset.rmimg, 1); URL.revokeObjectURL(r.url); return keepScroll(renderSubmit); }
+  if (t.dataset.rmaud) { f.audio = null; return keepScroll(renderSubmit); }
+  if (t.dataset.sv) { const v = t.dataset.v; S.survey[t.dataset.sv] = t.dataset.sv === 'nps' ? +v : v; S.survey.err = ''; return keepScroll(() => renderDetail(S.surveyFor)); }
+  if (t.dataset.star) { S.survey[t.dataset.star] = +t.dataset.v; S.survey.err = ''; return keepScroll(() => renderDetail(S.surveyFor)); }
+});
+
+document.addEventListener('input', ev => {
+  const el = ev.target;
+  if (el.id === 'text') { S.form.text = el.value; $('#cnt').textContent = el.value.length; clearErr(); }
+  if (el.id === 'cm' && S.survey) S.survey.comment = el.value;
+});
+
+document.addEventListener('change', async ev => {
+  const el = ev.target;
+  if (el.dataset && el.dataset.bind) {
+    clearErr(); S.form[el.dataset.bind] = el.checked;
+    if (el.dataset.bind === 'c3' && !el.checked) S.form.callback = false;
+    if (el.dataset.bind === 'anon' && el.checked) S.form.callback = false;
+    return keepScroll(renderSubmit);
+  }
+  if (el.id === 'imgs') {
+    clearErr(); const notes = [];
+    for (const file of [...el.files]) {
+      if (S.form.images.length >= MAX_IMG) { notes.push('แนบรูปได้ไม่เกิน ' + MAX_IMG + ' รูป'); break; }
+      const out = await shrink(file);
+      if (!out || out.size > MAX_BYTES) { notes.push('ไม่สามารถใช้รูป ' + file.name + ' ได้'); continue; }
+      S.form.images.push({ file: out, url: URL.createObjectURL(out) });
+    }
+    S.errors = notes; return keepScroll(renderSubmit);
+  }
+  if (el.id === 'aud') {
+    clearErr(); const file = el.files[0];
+    if (file && file.size > MAX_BYTES) S.errors = ['ไฟล์เสียงต้องไม่เกิน 4 MB'];
+    else if (file) S.form.audio = file;
+    return keepScroll(renderSubmit);
+  }
+});
+
+/* ---------- routing / boot ---------- */
+function route() {
+  renderNav();
+  if (!S.me || !S.me.authenticated) return renderLogin();
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h === 'track') return renderTrack();
+  if (h.startsWith('t=')) return renderDetail(h.slice(2));
+  if (S.config.areas.some(a => a.code === h)) { S.entryArea = h; if (!S.form.area) S.form.area = h; }
+  if (needProfile() && S.editProfile === false && S.me.profile && !S.form.gender) prefillProfile();
+  renderSubmit();
+}
+addEventListener('hashchange', () => { S.errors = []; if (S.me) route(); });
+
+(async () => {
+  S.form = newForm();
+  try {
+    [S.config, S.me] = await Promise.all([api('/api/config'), api('/api/me')]);
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (S.config.areas.some(a => a.code === h)) { S.entryArea = h; S.form.area = h; }
+    route();
+  } catch (e) { view(`<div class="err" role="alert">โหลดไม่สำเร็จ: ${esc(e.message)}</div>`); }
+})();
+</script>
+</body>
+</html>
